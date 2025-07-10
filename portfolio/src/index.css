@@ -1,9 +1,11 @@
-@import "tailwindcss";
+html {
+  scroll-behavior: smooth;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Optional: eigene Styles */
 body {
   font-family: sans-serif;
 }
