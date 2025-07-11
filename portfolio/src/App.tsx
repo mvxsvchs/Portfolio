@@ -2,13 +2,12 @@ import { useEffect, useState } from "react";
 import ScrollFloat from "@/components/common/ScrollFloat";
 import { ArrowUp, Loader2 } from "lucide-react";
 import { Helmet } from "react-helmet";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function App() {
     const [showButton, setShowButton] = useState(false);
     const [scrollProgress, setScrollProgress] = useState(0);
-    const [formStatus, setFormStatus] = useState<
-        "idle" | "sending" | "success" | "error"
-    >("idle");
+    const [formStatus, setFormStatus] = useState<"idle" | "sending">("idle");
 
     useEffect(() => {
         const handleScroll = () => {
@@ -46,13 +45,15 @@ export default function App() {
             });
 
             if (response.ok) {
-                setFormStatus("success");
+                toast.success("Danke für deine Nachricht!");
                 form.reset();
             } else {
-                setFormStatus("error");
+                toast.error("Ups! Da ging was schief.");
             }
         } catch (error) {
-            setFormStatus("error");
+            toast.error("Ups! Da ging was schief.");
+        } finally {
+            setFormStatus("idle");
         }
     };
 
@@ -73,6 +74,9 @@ export default function App() {
                 <meta property="og:type" content="website" />
                 <meta name="robots" content="index, follow" />
             </Helmet>
+
+            {/* Toaster */}
+            <Toaster position="bottom-center" reverseOrder={false} />
 
             {/* Header */}
             <header className="flex justify-between items-center p-6 bg-[#082C38] sticky top-0 z-50">
@@ -145,51 +149,44 @@ export default function App() {
                         Kontakt
                     </ScrollFloat>
 
-                    {formStatus === "success" ? (
-                        <p className="text-green-400">Danke für deine Nachricht! ✉️</p>
-                    ) : (
-                        <form
-                            onSubmit={handleSubmit}
-                            className="w-full max-w-md space-y-4"
+                    <form
+                        onSubmit={handleSubmit}
+                        className="w-full max-w-md space-y-4"
+                    >
+                        <input
+                            type="text"
+                            name="name"
+                            required
+                            placeholder="Dein Name"
+                            className="w-full p-3 rounded bg-[#0B3A47] text-[#FCD8B4]"
+                        />
+                        <input
+                            type="email"
+                            name="email"
+                            required
+                            placeholder="Deine E-Mail"
+                            className="w-full p-3 rounded bg-[#0B3A47] text-[#FCD8B4]"
+                        />
+                        <textarea
+                            name="message"
+                            required
+                            placeholder="Deine Nachricht"
+                            className="w-full p-3 rounded bg-[#0B3A47] text-[#FCD8B4] h-32"
+                        ></textarea>
+                        <button
+                            type="submit"
+                            disabled={formStatus === "sending"}
+                            className="flex items-center justify-center gap-2 bg-[#C19976] text-[#082C38] px-4 py-2 rounded hover:bg-[#FCD8B4] transition"
                         >
-                            <input
-                                type="text"
-                                name="name"
-                                required
-                                placeholder="Dein Name"
-                                className="w-full p-3 rounded bg-[#0B3A47] text-[#FCD8B4]"
-                            />
-                            <input
-                                type="email"
-                                name="email"
-                                required
-                                placeholder="Deine E-Mail"
-                                className="w-full p-3 rounded bg-[#0B3A47] text-[#FCD8B4]"
-                            />
-                            <textarea
-                                name="message"
-                                required
-                                placeholder="Deine Nachricht"
-                                className="w-full p-3 rounded bg-[#0B3A47] text-[#FCD8B4] h-32"
-                            ></textarea>
-                            <button
-                                type="submit"
-                                disabled={formStatus === "sending"}
-                                className="flex items-center justify-center gap-2 bg-[#C19976] text-[#082C38] px-4 py-2 rounded hover:bg-[#FCD8B4] transition"
-                            >
-                                {formStatus === "sending" ? (
-                                    <>
-                                        <Loader2 className="w-4 h-4 animate-spin" /> Senden...
-                                    </>
-                                ) : (
-                                    "Senden"
-                                )}
-                            </button>
-                            {formStatus === "error" && (
-                                <p className="text-red-400">Ups! Da ging was schief.</p>
+                            {formStatus === "sending" ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 animate-spin" /> Senden...
+                                </>
+                            ) : (
+                                "Senden"
                             )}
-                        </form>
-                    )}
+                        </button>
+                    </form>
                 </section>
             </main>
 
