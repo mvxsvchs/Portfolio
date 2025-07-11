@@ -55,7 +55,7 @@ export default function App() {
                 {/* Über mich */}
                 <section
                     id="about"
-                    className="flex flex-col items-center justify-center min-h-[80vh] text-center px-4 bg-[#0B3A47]"
+                    className="flex flex-col items-center justify-center min-h-[70vh] text-center px-4 bg-[#0B3A47]"
                 >
                     <ScrollFloat className="text-4xl font-bold mb-4 text-[#C19976]">
                         Über mich
@@ -84,7 +84,7 @@ export default function App() {
                 {/* Kontakt */}
                 <section
                     id="contact"
-                    className="flex flex-col items-center justify-center min-h-[80vh] text-center px-4 bg-[#082C38]"
+                    className="flex flex-col items-center justify-center min-h-[80vh] py-12 text-center px-4 bg-[#082C38]"
                 >
                     <ScrollFloat className="text-4xl font-bold mb-8 text-[#C19976]">
                         Kontakt
