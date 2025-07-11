@@ -1,15 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import ScrollFloat from "@/components/common/ScrollFloat";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowUp } from "lucide-react";
-
-gsap.registerPlugin(ScrollTrigger);
 
 export default function App() {
     const [showButton, setShowButton] = useState(false);
     const [scrollProgress, setScrollProgress] = useState(0);
-    const bgRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -23,22 +18,6 @@ export default function App() {
 
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
-
-    useEffect(() => {
-        const bg = bgRef.current;
-        if (!bg) return;
-
-        gsap.to(bg, {
-            y: -100,
-            ease: "none",
-            scrollTrigger: {
-                trigger: bg,
-                start: "top top",
-                end: "+=500",
-                scrub: true,
-            },
-        });
     }, []);
 
     const scrollToTop = () => {
@@ -64,28 +43,18 @@ export default function App() {
             </header>
 
             <main className="flex-grow">
-                {/* Hero mit GSAP Parallax */}
+                {/* Hero */}
                 <section
                     id="home"
-                    className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden"
+                    className="flex flex-col items-center justify-center min-h-screen text-center px-4"
                 >
-                    <div
-                        ref={bgRef}
-                        className="absolute inset-0 bg-center bg-cover"
-                        style={{
-                            backgroundImage: `url('/your-parallax.jpg')`,
-                        }}
-                    ></div>
+                    <ScrollFloat className="text-5xl font-bold mb-4">
+                        Willkommen!
+                    </ScrollFloat>
 
-                    <div className="relative z-10 text-center px-4">
-                        <ScrollFloat className="text-5xl font-bold mb-4">
-                            Willkommen!
-                        </ScrollFloat>
-
-                        <ScrollFloat className="max-w-xl mb-8">
-                            Ich baue moderne Webseiten mit React, TypeScript & Tailwind CSS.
-                        </ScrollFloat>
-                    </div>
+                    <ScrollFloat className="max-w-xl mb-8">
+                        Ich baue moderne Webseiten mit React, TypeScript & Tailwind CSS.
+                    </ScrollFloat>
                 </section>
 
                 {/* Über mich */}
@@ -138,7 +107,7 @@ export default function App() {
                 </section>
             </main>
 
-            {/* Sticky Footer */}
+            {/* Footer */}
             <footer className="p-4 text-center text-[#C19976] text-sm">
                 © {new Date().getFullYear()} Maximilian Joppien. Alle Rechte vorbehalten.
             </footer>
@@ -160,7 +129,6 @@ export default function App() {
             >
                 <ArrowUp className="w-5 h-5" />
             </button>
-
         </div>
     );
 }
