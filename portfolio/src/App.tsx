@@ -1,17 +1,22 @@
 import { useEffect, useState } from "react";
 import ScrollFloat from "@/components/common/ScrollFloat";
-import { ArrowUp } from "lucide-react";
+import { ArrowUp, Loader2 } from "lucide-react";
+import { Helmet } from "react-helmet";
 
 export default function App() {
     const [showButton, setShowButton] = useState(false);
     const [scrollProgress, setScrollProgress] = useState(0);
+    const [formStatus, setFormStatus] = useState<
+        "idle" | "sending" | "success" | "error"
+    >("idle");
 
     useEffect(() => {
         const handleScroll = () => {
             setShowButton(window.scrollY > 300);
 
             const scrollTop = window.scrollY;
-            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const docHeight =
+                document.documentElement.scrollHeight - window.innerHeight;
             const progress = (scrollTop / docHeight) * 100;
             setScrollProgress(progress);
         };
@@ -24,11 +29,56 @@ export default function App() {
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setFormStatus("sending");
+
+        const form = e.currentTarget;
+        const formData = new FormData(form);
+
+        try {
+            const response = await fetch("https://formspree.io/f/movwgnjv", {
+                method: "POST",
+                headers: {
+                    Accept: "application/json",
+                },
+                body: formData,
+            });
+
+            if (response.ok) {
+                setFormStatus("success");
+                form.reset();
+            } else {
+                setFormStatus("error");
+            }
+        } catch (error) {
+            setFormStatus("error");
+        }
+    };
+
     return (
         <div className="flex flex-col min-h-screen bg-[#082C38] text-[#FCD8B4] scroll-smooth relative overflow-x-hidden">
+            <Helmet>
+                <title>Maximilian Joppien – Portfolio</title>
+                <meta
+                    name="description"
+                    content="Willkommen auf meinem Portfolio – hier findest du moderne Webentwicklung mit React, TypeScript & Tailwind CSS."
+                />
+                <meta property="og:title" content="Maximilian Joppien – Portfolio" />
+                <meta
+                    property="og:description"
+                    content="Willkommen auf meinem Portfolio – hier findest du moderne Webentwicklung mit React, TypeScript & Tailwind CSS."
+                />
+                <meta property="og:image" content="/preview.jpg" />
+                <meta property="og:type" content="website" />
+                <meta name="robots" content="index, follow" />
+            </Helmet>
+
             {/* Header */}
             <header className="flex justify-between items-center p-6 bg-[#082C38] sticky top-0 z-50">
-                <h1 className="text-3xl font-bold text-[#C19976]">Maximilian Joppien</h1>
+                <h1 className="text-3xl font-bold text-[#C19976]">
+                    Maximilian Joppien
+                </h1>
                 <nav className="space-x-6">
                     <a href="#home" className="hover:underline">
                         Home
@@ -95,15 +145,51 @@ export default function App() {
                         Kontakt
                     </ScrollFloat>
 
-                    <ScrollFloat>
-                        📧 Schreib mir eine Mail an{" "}
-                        <a
-                            href="mailto:maximilian@joppien.dev"
-                            className="underline hover:text-[#C19976]"
+                    {formStatus === "success" ? (
+                        <p className="text-green-400">Danke für deine Nachricht! ✉️</p>
+                    ) : (
+                        <form
+                            onSubmit={handleSubmit}
+                            className="w-full max-w-md space-y-4"
                         >
-                            maximilian@joppien.dev
-                        </a>
-                    </ScrollFloat>
+                            <input
+                                type="text"
+                                name="name"
+                                required
+                                placeholder="Dein Name"
+                                className="w-full p-3 rounded bg-[#0B3A47] text-[#FCD8B4]"
+                            />
+                            <input
+                                type="email"
+                                name="email"
+                                required
+                                placeholder="Deine E-Mail"
+                                className="w-full p-3 rounded bg-[#0B3A47] text-[#FCD8B4]"
+                            />
+                            <textarea
+                                name="message"
+                                required
+                                placeholder="Deine Nachricht"
+                                className="w-full p-3 rounded bg-[#0B3A47] text-[#FCD8B4] h-32"
+                            ></textarea>
+                            <button
+                                type="submit"
+                                disabled={formStatus === "sending"}
+                                className="flex items-center justify-center gap-2 bg-[#C19976] text-[#082C38] px-4 py-2 rounded hover:bg-[#FCD8B4] transition"
+                            >
+                                {formStatus === "sending" ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 animate-spin" /> Senden...
+                                    </>
+                                ) : (
+                                    "Senden"
+                                )}
+                            </button>
+                            {formStatus === "error" && (
+                                <p className="text-red-400">Ups! Da ging was schief.</p>
+                            )}
+                        </form>
+                    )}
                 </section>
             </main>
 
